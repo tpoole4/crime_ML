@@ -1,0 +1,37 @@
+---
+- hosts: all
+  become: yes
+  pre_tasks:
+    # See: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=863199
+    - name: Ensure 'man' directory exists.
+      become: yes
+      file:
+        path: /usr/share/man/man1
+        state: directory
+        recurse: True
+      when:
+        - ansible_distribution == 'Ubuntu'
+        - ansible_distribution_version == '18.04'
+  roles:
+    - jkglasbrenner.miniconda
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - lmodern
+          - texlive
+          - texlive-fonts-recommended
+          - texlive-fonts-extra
+          - texlive-formats-extra
+          - texlive-latex-recommended
+          - texlive-latex-extra
+          - texlive-publishers
+          - texlive-science
+          - texlive-xetex
+          - texlive-luatex
+          - xzdec
+        state: present
+        install_recommends: no
+  vars:
+    miniconda_dir: "/opt/miniconda"
+...
